@@ -32,7 +32,7 @@ object First extends App {
     result
   }
 
-  // 2進法
+  // 2進法。ある整数を2進数表記に変換。
   def binaryRepresentation = {
     val num = StdIn.readInt()
     val res = (for (i <- 9 to 0 by -1) yield num / pow(2, i).toInt % 2)
@@ -40,14 +40,16 @@ object First extends App {
     res
   }
 
+  // 3種類のカードの数字の組合せた加算で目的の数値に合致するパターンが何通りあるか
+  // 単純に3種類の全カードの数値の組合せを全て網羅しようとすると計算量がO(Nの3乗)と大きくなり過ぎるのでこうする。
   def threeCards = {
     val Array(maxNum, targetNum) = StdIn.readLine.split(" ").map(_.toInt)
     val numRange = 1 to maxNum
     val resultCount = (for {
       firstNum <- numRange
       secondNum <- numRange
-      diff = targetNum - firstNum - secondNum
-      if diff > 0 && diff <= maxNum
+      diff = targetNum - firstNum - secondNum // 目的の数値までの差
+      if diff > 0 && diff <= maxNum // 目的数値までの差を埋めることは可能なのか
     } yield 1).length
     resultCount
   }
@@ -76,10 +78,6 @@ object First extends App {
       subsetSum == target
     }
   }
-
-
-
-
 
 }
 
