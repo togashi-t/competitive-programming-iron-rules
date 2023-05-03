@@ -1,6 +1,7 @@
 package chapter
 
 import scala.io.StdIn
+import scala.util.chaining.scalaUtilChainingOps
 
 object Second extends App {
 
@@ -83,6 +84,58 @@ object Second extends App {
       cumulativeMatrix(endRowIndex)(endColIndex) + cumulativeMatrix(startRowIndex - 1)(startColIndex - 1) - cumulativeMatrix(startRowIndex - 1)(endColIndex) - cumulativeMatrix(endRowIndex)(startColIndex - 1)
     }
   }
+
+
+  // 二次元の累積和(2)
+  def winterInAlgoKingdom = {
+    // 標準入力から必要な情報を取得
+    val List(height, width, dayCount) = StdIn.readLine.split(" ").map(_.toInt).toList
+    val snowAreaNumbersList = (1 to dayCount).toList.map { _ =>
+      StdIn.readLine().split(" ").map(_.toInt).toList
+    }
+
+    // 積雪の前日差を記録するmatrixを作成
+    val diffMatrix = {
+      // 素材として使用する、全要素が0のmatrix。
+      // 要素へのアクセス時にIndexOutOfBoundsExceptionが発生しないようサイズを+1している。余分な行が最下段に、余分な列が最右端に一つ増えるイメージ。
+      val initDiffMatrix = Vector.fill(height + 1, width + 1)(0)
+      // 入力の数値に従い前日差を記録するmatrixに反映
+      snowAreaNumbersList.foldLeft(initDiffMatrix) { case (tmpMatrix, (startRowNum :: startColNum :: endRowNum :: endColNum :: Nil)) =>
+        updateElement(tmpMatrix, startRowNum - 1, startColNum - 1, 1) // 対象範囲左上端の要素を+1
+          .pipe(x => updateElement(x, endRowNum, endColNum, 1)) // 対象範囲右下端のひとつ右下外を+1
+          .pipe(x => updateElement(x, endRowNum, startColNum - 1, -1)) // 対象範囲左下端のひとつ下外を-1
+          .pipe(x => updateElement(x, startRowNum - 1, endColNum, -1)) // 対象範囲右上端のひとつ右外を-1
+      }
+    }
+
+    // 前日差記録のmatrixの累積和を求める
+    val cumulativeDiffMatrix = {
+      // まずは横方向の累積和を求める
+      val horizontalCumulativeMatrix = diffMatrix.map { rowNumbers =>
+        rowNumbers.scanLeft(0)(_ + _).tail // 先頭に追加される0を除外するためtailを使用
+      }
+      // 横方向の累積和を求めたmatrixを基にして縦方向の累積和を求めることで、完成形の累積和のmatrixを求める
+      // 2行目以降の行から順番に、各要素に対して1行上の同一列の値を加算する
+      (1 until height).foldLeft(horizontalCumulativeMatrix) { case (tmpMatrix, rowIndex) =>
+        tmpMatrix.updated(
+          rowIndex,
+          (0 to width).map(colIndex => tmpMatrix(rowIndex - 1)(colIndex) + tmpMatrix(rowIndex)(colIndex)).toVector
+        )
+      }
+    }
+
+    // matrixは処理の都合上、余分に行と列を1つずつ設けているので、それらをそれぞれ削る。
+    cumulativeDiffMatrix.slice(0, height).map(row => row.slice(0, width))
+  }
+
+  // 2次元のVectorの要素の値を更新するための関数を定義する。更新が割と手間なので。
+  private def updateElement(matrix: Vector[Vector[Int]], rowIndex: Int, colIndex: Int, delta: Int): Vector[Vector[Int]] = {
+    val oldValue = matrix(rowIndex)(colIndex)
+    val newValue = oldValue + delta
+    matrix.updated(rowIndex, matrix(rowIndex).updated(colIndex, newValue))
+  }
+
+
 
 
 }
