@@ -136,7 +136,27 @@ object Second extends App {
   }
 
 
+  def resortHotel = {
+    // 必要な数値を標準入力から取得
+    val roomCount = StdIn.readInt()
+    val roomGuestCapacityVector = StdIn.readLine.split(" ").map(_.toInt).toVector
+    val constructionDayCount= StdIn.readInt()
+    val constructionRoomNumberRangePairList = (1 to constructionDayCount).toList.map { _ =>
+      val List(startRoomNumber, endRoomNumber) = StdIn.readLine().split(" ").map(_.toInt).toList
+      (startRoomNumber, endRoomNumber)
+    }
 
+    // 実際の処理
+    // 左から順に累積maxを算出
+    val cumulativeMaxGuestCapacityFromHeadVector = roomGuestCapacityVector.scanLeft(0)(math.max)
+    // 右から順に累積maxを算出。何日目という数値とindex番号を合わせた方が理解が楽なので、先頭に要素0を追加している。
+    val cumulativeMaxGuestCapacityFromEndVector = 0 +: roomGuestCapacityVector.scanRight(0)(math.max)
+    // 結果のリストを生成
+    constructionRoomNumberRangePairList.map { case (startRoomNumber, endRoomNumber) =>
+      // 工事対象外の前半の部屋の最大人数と、工事対象外の後半の部屋の最大人数の内、大きい方の数値を返す。
+      math.max(cumulativeMaxGuestCapacityFromHeadVector(startRoomNumber - 1), cumulativeMaxGuestCapacityFromEndVector(endRoomNumber + 1))
+    }
+  }
 
 }
 
