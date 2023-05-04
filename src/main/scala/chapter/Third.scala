@@ -125,4 +125,19 @@ object Third {
     if (result) "Yes" else "No"
   }
 
+
+  // チャレンジ問題
+  def compression = {
+    // 使用する値の取得
+    val sc = new java.util.Scanner(System.in)
+    val count = sc.nextInt()
+    val numbers = Vector.fill(count)(sc.nextInt())
+
+    // 値の重複を排除した上で昇順に並べる
+    val distinctSortedNumbers = numbers.distinct.sorted
+    // numbersの各値を置換する。distinctSortedNumbersの要素の値が合致する部分のindex + 1の数値に置換。
+    val resultNumbers = numbers.map { n => distinctSortedNumbers.search(n).insertionPoint + 1 }
+    resultNumbers.mkString(" ")
+  }
+
 }
