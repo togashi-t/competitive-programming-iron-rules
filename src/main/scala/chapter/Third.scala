@@ -55,4 +55,33 @@ object Third {
     searchMinutesFunc(1, 1000000000)
   }
 
+
+  // しゃくとり法
+  def closePairs = {
+    // 使用する値の取得
+    val List(count, targetDiff) = StdIn.readLine().split(" ").map(_.toInt).toList
+    val numbers = StdIn.readLine().split(" ").map(_.toInt).toVector
+    val maxIndex = numbers.length - 1
+
+    // コレクション内から取り出した2つの値の組み合わせの内、その差が指定値以下となる組み合わせの数を数える
+    @tailrec
+    def go(leftIndex: Int, rightIndex: Int, count: Long): Long = {
+      if (leftIndex == maxIndex) { // pairの小さい方の値がコレクションの右端になったら終了
+        count
+      } else {
+        // 組合せの差
+        val diff = numbers(rightIndex) - numbers(leftIndex)
+        // rightIndexをより大きくする余地があるかの確認
+        if ((rightIndex < maxIndex) && diff <= targetDiff) { // rightIndexをより大きくする余地がある場合
+          go(leftIndex, rightIndex + 1, count)
+        } else { // rightIndexをより大きくする余地がない場合
+          val delta = rightIndex - leftIndex + (if (diff <= targetDiff) 0 else -1) // rightIndexが右端にあるとき、場合によってはdiff <= targetDiffとなる
+          go(leftIndex + 1, rightIndex, count + delta)
+        }
+      }
+    }
+
+    go(0, 1, 0)
+  }
+
 }
