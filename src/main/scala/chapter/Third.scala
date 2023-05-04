@@ -1,6 +1,7 @@
 package chapter
 
 import scala.annotation.tailrec
+import scala.collection.Searching.Found
 import scala.io.StdIn
 
 object Third {
@@ -82,6 +83,46 @@ object Third {
     }
 
     go(0, 1, 0)
+  }
+
+
+  // 半分全列挙
+  def fourBoxes = {
+    // 使用する値の取得
+    val List(cardCount, target) = StdIn.readLine().split(" ").map(_.toInt).toList
+    val cardsList = (for (_ <- 1 to 4) yield {
+      StdIn.readLine().split(" ").map(_.toInt).toList
+    }).toList
+
+
+    val cardANumList :: cardBNumList :: cardCNumList :: cardDNumList :: Nil = cardsList
+    // カードAとBの全ての組み合わせの足し合わせた数のリストを作成
+    val cardABSumList = for {
+      cardANum <- cardANumList
+      cardBNum <- cardBNumList
+    } yield {
+      cardANum + cardBNum
+    }
+    // カードCとDの全ての組み合わせの足し合わせた数のリストを作成。このリスト内の要素は二分探索するので、この時点で昇順に並び替えておく。
+    val cardCDSumSortedList = (for {
+      cardCNum <- cardCNumList
+      cardDNum <- cardDNumList
+    } yield {
+      cardCNum + cardDNum
+    }).sorted
+
+    // cardABSumListとcardCDSumSortedListからそれぞれ1つずつ取り出して加算した結果で、目的の数値と合致するものがあるかを調べる
+    val result: Boolean = cardABSumList.exists { abSum =>
+      // 目的の数値との差
+      val diff = target - abSum
+      // 目的の数値との差に合致するものがあるかを調べる
+      cardCDSumSortedList.search(diff) match {
+        case Found(_) => true
+        case _ => false
+      }
+    }
+
+    if (result) "Yes" else "No"
   }
 
 }
