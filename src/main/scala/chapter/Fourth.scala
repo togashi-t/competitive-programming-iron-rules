@@ -145,4 +145,35 @@ object Fourth {
   }
 
 
+  // 二次元のDP(3):最長共通部分列問題
+  def lcs = {
+    val scanner = new java.util.Scanner(System.in)
+    val firstChars = scanner.next().toVector
+    val secondChars = scanner.next().toVector
+
+    // dpを初期化
+    val dp = Array.ofDim[Int](firstChars.length + 1, secondChars.length + 1)
+    // dpを更新していく。indexが1の行から順に
+    for (rowIndex <- 1 to firstChars.length) {
+      for (colIndex <- 1 to secondChars.length) {
+        // このrowIndexとcolIndexのマスに入れる値を決める
+        val value = {
+          // 1つ左または1つ上のマスの値の内大きい方
+          val tmpMax = math.max(dp(rowIndex)(colIndex - 1), dp(rowIndex - 1)(colIndex))
+          // このマスの行と列の文字が一致する場合は、一つ斜め上の値+1とtmpMaxの内大きい方の値。そうでなければtempMax
+          // firstChars,secondChars共にindexが0が一文字目なので、文字を参照するindexの場合は行、列のindex-1となる
+          if (firstChars(rowIndex - 1) == secondChars(colIndex - 1)) {
+            math.max(dp(rowIndex - 1)(colIndex - 1) + 1, tmpMax)
+          } else {
+            tmpMax
+          }
+        }
+        dp(rowIndex)(colIndex) = value
+      }
+    }
+
+    dp(firstChars.length)(secondChars.length)
+  }
+
+
 }
