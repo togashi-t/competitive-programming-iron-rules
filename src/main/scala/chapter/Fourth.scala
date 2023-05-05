@@ -62,6 +62,42 @@ object Fourth {
   }
 
 
+  // 二次元のDP(1)
+  def subsetSum = {
+    val scanner = new java.util.Scanner(System.in)
+    val count = scanner.nextInt()
+    val target = scanner.nextInt()
+    val numbers = Vector.fill(count)(scanner.nextInt())
+
+    // dpの列(0番から始まってtarget番目まで)は数値を加算した合計値に対応させて使用
+    val dp = Array.ofDim[Boolean](count + 1, target + 1)
+    // カードを1つも選んでいない状態での値は0になるため
+    dp(0)(0) = true
+
+    // カードを順に使用してdpを更新していく
+    @scala.annotation.tailrec
+    def updateDp(currentRowIndex: Int, prevRowTrueColIndexSet: Set[Int]): Array[Array[Boolean]] = {
+      if (currentRowIndex > count) {
+        dp
+      } else {
+        // 加算する数。カードとrowのindexの対応関係は1相違があるので次のようにしている。例、カードのindex=0とrowのindex=1が対応する。
+        val delta = numbers(currentRowIndex - 1)
+        // どの列のindexをtrueにするか。前の行のindexは無条件でtrue。
+        // また、前の行でtrueとなっているindexにdeltaを加算したindexもtrue。ただし、targetよい大きいindexは除外する。Array範囲外への参照により例外が発生することを回避するため。
+        val currentRowTrueColIndexSet = prevRowTrueColIndexSet ++ prevRowTrueColIndexSet.map { x: Int => x + delta }.filter { x: Int => x <= target }
+        // dpの対象行の更新
+        currentRowTrueColIndexSet.foreach { x => dp(currentRowIndex)(x) = true }
+        // 次の行を更新対象行に指定
+        updateDp(currentRowIndex + 1, currentRowTrueColIndexSet)
+      }
+    }
+
+    updateDp(1, Set(0))
+
+    if (dp(count)(target)) "Yes" else "No"
+  }
+
+
 
 
 }
