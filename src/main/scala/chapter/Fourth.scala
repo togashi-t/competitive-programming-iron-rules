@@ -176,4 +176,49 @@ object Fourth {
   }
 
 
+  // 二次元のDP(4):区間DP
+  def blockGames = {
+    val scanner = new java.util.Scanner(System.in)
+    val count = scanner.nextInt()
+    // 後から使用する際に、ブロックの番号とindex番号が一致していた方が都合がよいので、先頭にdummyで要素を追加した。
+    val targetBlockNumberPoints = (0, 0) +: (for (_ <- 1 to count) yield {
+      val Array(number, point) = Array.fill(2)(scanner.nextInt())
+      (number, point)
+    }).toVector
+
+    // 行のindexを最も左のブロックの番号、列のindexを最も右のブロックの番号に見立てている。
+    val dp = Array.ofDim[Int](count + 1, count + 1)
+    // dpを更新していく
+    for (rowIndex <- 1 to count) {
+      for (colIndex <- count to rowIndex by -1) { // 両端のブロックの数が同じになるまで
+        val point = if (rowIndex == 1 && colIndex == count) { // まだブロックを1つも除いていない状態のポイントは0
+          0
+        } else if (rowIndex == 1) { // rowIndexが1の時は、右側のブロックを除いて今に至る経路だけを考えればよい
+          // 除いたブロックの番号はcolIndex + 1
+          dp(rowIndex)(colIndex + 1) + getPoint(colIndex + 1, rowIndex, colIndex)
+        } else if (colIndex == count) { // colIndexがcountの時は、左側のブロックを除いて今に至る経路だけを考えればよい。
+          // 除いたブロックの番号はrowIndex - 1
+          dp(rowIndex - 1)(colIndex) + getPoint(rowIndex - 1, rowIndex, colIndex)
+        } else { // 上記以外の場合は、両方の経路を考えて、ポイントの大きい方を採用する。
+          math.max(
+            dp(rowIndex)(colIndex + 1) + getPoint(colIndex + 1, rowIndex, colIndex),
+            dp(rowIndex - 1)(colIndex) + getPoint(rowIndex - 1, rowIndex, colIndex)
+          )
+        }
+        dp(rowIndex)(colIndex) = point
+      }
+    }
+
+    // 除いたブロックの番号と残っているブロックの両端の番号から、獲得ポイントを算出
+    def getPoint(removeBlock: Int, rowIndex: Int, colIndex: Int) = {
+      val (targetBlock, point) = targetBlockNumberPoints(removeBlock)
+      if (targetBlock >= rowIndex && targetBlock <= colIndex) point else 0
+    }
+
+
+    // ブロックの数が同数となったマスの中で最も大きい値
+    (for (i <- 1 to count) yield dp(i)(i)).max
+  }
+
+
 }
