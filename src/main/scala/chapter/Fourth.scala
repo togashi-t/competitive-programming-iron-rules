@@ -242,4 +242,51 @@ object Fourth {
   }
 
 
+  // ビットDP。難易度が高いのでスキップした。
+  def allFree = {
+    val scanner = new java.util.Scanner(System.in)
+    val Array(itemCount, couponCount) = Array.fill(2)(scanner.nextInt())
+    val couponFlagsVector = for (_ <- 1 to couponCount) yield Vector.fill(itemCount)(scanner.nextInt())
+
+    // dpを初期化。行のindexはクーポンに対応。列のindexは商品の組み合わせのビット表現を10進数に変換したものに対応。
+    val dp = Array.tabulate(couponCount + 1, 1 << itemCount)( (_, _) => math.pow(10, 9))
+    // dpを更新していく
+    dp(0)(0) = 0
+  }
+
+
+  // チャレンジ問題
+  def numberOfRoutes = {
+    val scanner = new java.util.Scanner(System.in)
+    val Array(height, width) = Array.fill(2)(scanner.nextInt())
+    val colorsVector = (for (_ <- 1 to height) yield scanner.next().toCharArray.toVector).toVector
+
+    // とあるマスが通過可能であるか判定
+    def isPassable(rowIndex: Int, colIndex: Int) = colorsVector(rowIndex - 1)(colIndex - 1) == '.'
+
+    // dpを定義。そのマス目に来るまで何通りあるかの数を記録していく。
+    val dp = Array.tabulate[Long](height + 1, width + 1)( (_, _) => -Int.MaxValue)
+    // 最初のマスは通過可能なので
+    dp(1)(1) = 1
+
+    for (rowIndex <- 1 to height) {
+      for (colIndex <- 1 to width) {
+        if (isPassable(rowIndex, colIndex) && !(rowIndex == 1 && colIndex == 1)) { // 通過可能なマスであり、かつ最初のマスではない場合
+          // 左隣のマスの値
+          val leftValue = dp(rowIndex)(colIndex - 1)
+          // 上隣のマスの値
+          val aboveValue = dp(rowIndex - 1)(colIndex)
+          if (leftValue > 0 || aboveValue > 0) { // 左隣または上隣の経路が有効な場合
+            val value = if (leftValue > 0 && aboveValue > 0) leftValue + aboveValue else math.max(leftValue, aboveValue)
+            dp(rowIndex)(colIndex) = value
+          }
+        }
+      }
+    }
+
+    // 最後のマスの値が経路数。なお、たどり着くことが不可能な場合は、値がdpの各マスの初期値である-Int.MaxValueとなっている。
+    val result = dp(height)(width)
+    if (result > 0) result else 0
+  }
+
 }
