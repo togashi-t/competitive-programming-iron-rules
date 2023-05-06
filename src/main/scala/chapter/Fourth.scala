@@ -221,4 +221,25 @@ object Fourth {
   }
 
 
+
+  // 遷移形式の工夫
+  def sugoroku = {
+    val scanner = new java.util.Scanner(System.in)
+    val count = scanner.nextInt()
+    val aNumbers = Vector.fill(count - 1)(scanner.nextInt())
+    val bNumbers = Vector.fill(count - 1)(scanner.nextInt())
+
+    // ゴールにたどり着くまでに得られる合計スコアを記録するdp。マス目の番号とindex番号が一致するようにしている。
+    val dp = Array.fill(count + 1)(-Int.MaxValue) // dpの初期値を0にしてしまうと、実現しえない経路が評価されることがあり、最適な遷移パスが正しく評価されない可能性がある。
+    dp(1) = 0
+    // dpを更新していく。aNumbersとbNumbersから順に遷移先の値を取り出していくことによって
+    for (i <- 0 to count - 2) {
+      dp(aNumbers(i)) = math.max(dp(aNumbers(i)), dp(i + 1) + 100)
+      dp(bNumbers(i)) = math.max(dp(bNumbers(i)), dp(i + 1) + 150)
+    }
+
+    dp(count)
+  }
+
+
 }
