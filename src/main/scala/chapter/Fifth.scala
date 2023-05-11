@@ -66,7 +66,7 @@ object Fifth {
       (if (tmp < 0) tmp + 10000 else tmp) % 10000 // 計算の途中で0を下回った場合は100000を加算した上で除算をする
     }
 
-    results.tail
+    results.tail // scanLeftで先頭に追加された0は不要なのでtailを使用
   }
 
 }
