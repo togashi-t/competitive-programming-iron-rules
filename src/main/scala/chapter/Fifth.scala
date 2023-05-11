@@ -29,4 +29,23 @@ object Fifth {
     }
   }
 
+
+  // 最大公約数
+  // ユークリッドの互除法と呼ばれるアルゴリズム。
+  // 大きい方の数を小さい方の数で割った余りに変更することを繰り返し、片方の数がゼロになったら終了。もう片方の数が答え。
+  def calculateGCD = {
+    val scanner = new java.util.Scanner(System.in)
+    val Vector(a, b) = Vector.fill(2)(scanner.nextInt())
+
+    def f(a: Int, b: Int): Int = {
+      val (bigger, smaller) = if (a >= b) (a, b) else (b, a)
+      if (smaller == 0) bigger else {
+        val remainder = bigger % smaller
+        f(smaller, remainder)
+      }
+    }
+
+    f(a, b)
+  }
+
 }
