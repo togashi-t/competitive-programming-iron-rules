@@ -48,4 +48,25 @@ object Fifth {
     f(a, b)
   }
 
+
+  // 余りの計算(1):基本
+  // 足し算、引き算、掛け算では、好きなタイミングで余りをとっても答えは変わらないという性質がある。
+  // そのため例えば、それぞれの数の余りをとって、その余りの数同士で算術を行う、ということでも余りを求められる。
+  def blackboard = {
+    val scanner = new java.util.Scanner(System.in)
+    val n = scanner.nextInt()
+    val inputs = for (_ <- 1 to n) yield {
+      val t = scanner.next()
+      val a = scanner.nextInt()
+      (t, a)
+    }
+
+    val results = inputs.scanLeft(0) { case (prev, (t, a)) =>
+      val tmp = if (t == "+") prev + a else if (t == "-") prev - a else prev * a
+      (if (tmp < 0) tmp + 10000 else tmp) % 10000 // 計算の途中で0を下回った場合は100000を加算した上で除算をする
+    }
+
+    results.tail
+  }
+
 }
