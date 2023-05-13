@@ -1,5 +1,7 @@
 package chapter
 
+import scala.annotation.tailrec
+
 object Fifth {
 
   // 素数判定
@@ -67,6 +69,46 @@ object Fifth {
     }
 
     results.tail // scanLeftで先頭に追加された0は不要なのでtailを使用
+  }
+
+
+  // 余りの計算(2):累乗
+  def power = {
+    val scanner = new java.util.Scanner(System.in)
+    val Vector(a, b) = Vector.fill(2)(scanner.nextInt())
+
+    // aのb乗をmで割った余りを返す関数
+    def powerImpl(a: Long, b: Long, m: Long) = {
+      /**
+       * @param powerOfTwo 2の乗数
+       * @param aToPowerOfTwo aの(2のpowerOfTwo乗)乗
+       * @param accumAnswer これまでの計算結果。余り
+       * @return
+       */
+      @scala.annotation.tailrec
+      def f(powerOfTwo: Int, aToPowerOfTwo: Long, accumAnswer: Long): Long = {
+        if (powerOfTwo >= 30) { // bの最大値は10の9条。そしてこれは2の30乗未満なので。
+          accumAnswer
+        } else {
+          // すなわち1×2のpowerOfTwo乗
+          val divisor = 1L << powerOfTwo
+          // bがdivisorの倍数であるか。bをビット表現にしたときにpowerOfTwo番目のビットが1かどうかをチェックしている。
+          val isMultipleOfDivisor = (b / divisor) % 2 == 1
+          // これまでの計算結果を(上記変数がtrueの場合に)更新するためのもの。これまでの計算結果に今回判明した約数を乗じて余りを求めている。
+          val nextAnswer = if (isMultipleOfDivisor) (accumAnswer * aToPowerOfTwo) % m else accumAnswer
+          // 次に使用される2のpowerOfTwo乗の値。効率的な累乗計算のためのステップである。都度都度1乗から順に始めなくてもいいように。
+          // %mとしているのは、aToPowerOfTwoの2乗を計算するときに、計算結果が大きくなりすぎてオーバーフローを引き起こすことを防ぐためです。
+          // これにより、aToPowerOfTwo の 2 乗を m で割った余りを効率的に計算することができる。
+          //なお、この方法は、(a * b) % m が (a % m * b % m) % m と等しいという、モジュラ演算の性質を利用している。
+          val nextAToPowerOfTwo = (aToPowerOfTwo * aToPowerOfTwo) % m
+          f(powerOfTwo + 1, nextAToPowerOfTwo, nextAnswer)
+        }
+      }
+
+      f(0, a, 1)
+    }
+
+    powerImpl(a, b, 1000000007)
   }
 
 }
