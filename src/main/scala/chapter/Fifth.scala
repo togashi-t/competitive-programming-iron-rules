@@ -182,4 +182,32 @@ object Fifth {
   }
 
 
+  // ゲーム(3):Grundy数
+  def game3 = {
+    val scanner = new java.util.Scanner(System.in)
+    val Vector(n, x, y) = Vector.fill(3)(scanner.nextInt()) // aはbよりも小さい
+    val stoneNumbers = Vector.fill(n)(scanner.nextInt())
+
+    // Grundy数を求める。最大値として可能性がある100000までのもの。
+    val grundy = Array.ofDim[Int](100000 + 1) // 一度だけ配列を作成
+    for (i <- 0 to 100000) {
+      // 現在の状態から遷移可能なすべての状態を調べ、それぞれの状態のGrundy数をtransit配列にマーク
+      // その後、transit配列を見て、初めて出現しない非負整数（つまり、最小の未使用Grundy数）を現在の状態のGrundy数として選ぶ
+      // transit配列は3つの要素だけを持っているが、このゲームにおいては、遷移先の状態のGrundy数は必ず0、1、2のいずれかになるため
+      val transit = Array.fill(3)(false)
+      // もしiがx以上なら、xのGrundy数に対応する遷移フラグを立てる
+      if (i >= x) transit(grundy(i - x)) = true
+      // もしiがy以上なら、xのGrundy数に対応する遷移フラグを立てる
+      if (i >= y) transit(grundy(i - y)) = true
+      // 遷移フラグをチェックし、Grundy数を計算。最小の未使用のGrundy数を求めている
+      grundy(i) = if (!transit(0)) 0 else if (!transit(1)) 1 else 2
+    }
+
+    // Grundy数に基づいてXORの和を求める。foldLeftを使って全要素についてXORの和を計算
+    val xorSum = stoneNumbers.foldLeft(0) { (xorSum, i) => xorSum ^ grundy(i) }
+
+    if (xorSum != 0) "First" else "Second"
+  }
+
+
 }
