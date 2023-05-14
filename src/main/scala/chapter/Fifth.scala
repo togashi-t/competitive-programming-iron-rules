@@ -154,4 +154,22 @@ object Fifth {
   }
 
 
+  // ゲーム(1):必勝法
+  def game1 = {
+    val scanner = new java.util.Scanner(System.in)
+    val Vector(n, a, b) = Vector.fill(3)(scanner.nextInt()) // aはbよりも小さい
+
+    // 残りの石の数がいくつ(index番号と一致)の時点で自分の番になったときに勝ち(true)と負け(false)のいずれであるのかを記録する
+    val dp = Array.fill(n + 1)(false)
+    for (i <- 0 to n) {
+      // 自分が石を取る余地があって、取った結果相手の状態が負けに遷移する場合は勝ち。そうでない場合は負け。
+      if (i >= a && !dp(i - a)) dp(i) = true
+      else if (i >= b && !dp(i - b)) dp(i) = true
+      else dp(i) = false
+    }
+
+    dp(n)
+  }
+
+
 }
