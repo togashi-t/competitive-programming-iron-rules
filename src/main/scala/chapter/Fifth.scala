@@ -111,4 +111,36 @@ object Fifth {
     powerImpl(a, b, 1000000007)
   }
 
+
+  // 余りの計算(3):割り算
+  def combination = {
+    val scanner = new java.util.Scanner(System.in)
+    val Vector(n, r) = Vector.fill(2)(scanner.nextInt())
+    // 割り算に使用する数
+    val m = 1000000007
+
+    // 繰り返し二乗法(べき乗の計算を高速に行うためのアルゴリズム)を実行する関数。
+    // 各ステップで余りを計算することで、大きな数の積や冪を計算してもオーバーフローを防止できる。
+    def power(x: Long, y: Int, m: Int): Long = {
+      if (y == 0) 1
+      // yが偶数の場合。計算を(x^2)^(y/2)として行う。 これは、x^y = (x^2)^(y/2)であることを利用している。
+      // ここで、x^2 mod mを再帰的に計算し、結果をy/2の指数として計算する。
+      else if (y % 2 == 0) power((x * x) % m, y / 2, m)
+      // yが奇数の場合。計算をx * (x^2)^((y-1)/2)として行う。これは、x^y = x * x^(y-1)であることを利用している。
+      // ここで、x^2 mod mを再帰的に計算し、結果を(y-1)/2の指数として計算する。その後、xを掛けている。
+      else (x * power((x * x) % m, y / 2, m)) % m
+    }
+
+    // 分子を求める。余りを
+    val a = (1 to n).foldLeft(1L) { case (accRemainder, x) => (accRemainder * x) % m }
+    // 分母を求める。余りを
+    val b = {
+      val left = (1 to r).foldLeft(1L) { case (accRemainder, x) => (accRemainder * x) % m }
+      val right = (1 to n - r).foldLeft(1L) { case (accRemainder, x) => (accRemainder * x) % m }
+      (left * right) % m
+    }
+
+    (a * power(b, m - 2, m)) % m
+  }
+
 }
