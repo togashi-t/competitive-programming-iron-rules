@@ -185,7 +185,7 @@ object Fifth {
   // ゲーム(3):Grundy数
   def game3 = {
     val scanner = new java.util.Scanner(System.in)
-    val Vector(n, x, y) = Vector.fill(3)(scanner.nextInt()) // aはbよりも小さい
+    val Vector(n, x, y) = Vector.fill(3)(scanner.nextInt())
     val stoneNumbers = Vector.fill(n)(scanner.nextInt())
 
     // Grundy数を求める。最大値として可能性がある100000までのもの。
@@ -207,6 +207,31 @@ object Fifth {
     val xorSum = stoneNumbers.foldLeft(0) { (xorSum, i) => xorSum ^ grundy(i) }
 
     if (xorSum != 0) "First" else "Second"
+  }
+
+
+  def game4 = {
+    val scanner = new java.util.Scanner(System.in)
+    val n = scanner.nextInt()
+    val numbers = Array.fill(n)(scanner.nextInt())
+
+    // スコアを記録するもの。段数とindexが一致するよう、nではなくn+1としている。
+    val dp = Array.ofDim[Int](n + 1, n + 1)
+    // 最下段へ記録
+    numbers.zipWithIndex.foreach { case (number, x) => dp(n)(x + 1) = number }
+    // 最下段の一つ上の段から一番上の段まで記録していく
+    for (i <- n - 1 to 1 by -1) {
+      // 各列への記録。列数は段数と一致
+      for (x <- 1 to i) {
+        // 一つ下の段の2つの値を取得
+        val lowerLeftScore = dp(i + 1)(x)
+        val lowerRightScore = dp(i + 1)(x + 1)
+        dp(i)(x) = if (i % 2 == 1) math.max(lowerLeftScore, lowerRightScore) else math.min(lowerLeftScore, lowerRightScore)
+      }
+    }
+
+    // 最上段のマスの値
+    dp(1)(1)
   }
 
 
