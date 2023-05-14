@@ -172,4 +172,14 @@ object Fifth {
   }
 
 
+  // ゲーム(2):ニム
+  def game2 = {
+    val scanner = new java.util.Scanner(System.in)
+    val n = scanner.nextInt()
+    val stoneNumbers = Vector.fill(n)(scanner.nextInt())
+
+    stoneNumbers.reduceLeft(_ ^ _) // 全要素に対してXORを適用
+  }
+
+
 }
