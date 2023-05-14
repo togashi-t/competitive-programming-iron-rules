@@ -143,4 +143,15 @@ object Fifth {
     (a * power(b, m - 2, m)) % m
   }
 
+
+  // 包除原理
+  // 例題。3または5で割り切れる数はいくつあるか
+  def divisors = {
+    val scanner = new java.util.Scanner(System.in)
+    val n = scanner.nextLong()
+
+    n / 3 + n / 5  - n / 15
+  }
+
+
 }
