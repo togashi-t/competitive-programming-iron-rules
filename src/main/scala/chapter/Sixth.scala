@@ -46,4 +46,23 @@ object Sixth {
     dayMaxHourArray.sum
   }
 
+
+  // 一手先を考える
+  // 区間スケジューリング問題
+  def intervalScheduling = {
+    val scanner = new java.util.Scanner(System.in)
+    val n = scanner.nextInt()
+    val lrList = (for (_ <- 1 to n) yield List.fill(2)(scanner.nextInt())).toList
+
+    // リストの要素を終了時間が早い順に並べる。後の処理で要素へのアクセス効率が良くなるよう、Arrayに変換しておく。
+    val sortedLrArray = lrList.sortBy { case _ :: r :: Nil => r }.toArray
+    // 回数を算出
+    val (_, count) = (1 to n).foldLeft((0, 0)) { case ((currentTime, tmpCount), i) =>
+      val l :: r :: Nil = sortedLrArray(i - 1)
+      // 現在時刻が上映開始時刻以前の場合は、次処理時の現在時刻と見た回数を更新
+      if (currentTime <= l) (r, tmpCount + 1) else (currentTime, tmpCount)
+    }
+    count
+  }
+
 }
