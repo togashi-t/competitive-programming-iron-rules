@@ -154,7 +154,7 @@ object Sixth {
 
 
   // データの持ち方を工夫する
-  // 実際のarrayを反転させるのではなく、判定しているか否かの状態を変数に持つ
+  // 実際のarrayを反転させるのではなく、反転しているか否かの状態を変数に持つ
   def changeAndReverse = {
     val scanner = new java.util.Scanner(System.in)
     val List(n, q) = List.fill(2)(scanner.nextInt())
