@@ -65,4 +65,28 @@ object Sixth {
     count
   }
 
+
+  // 個数を考える
+  def triangle = {
+    val scanner = new java.util.Scanner(System.in)
+    val n = scanner.nextInt()
+    val numbers = List.fill(n)(scanner.nextInt())
+
+    // リストの要素の数値毎の数をまとめておく
+    val numberCountMap = numbers.groupBy(identity).view.mapValues(_.size).toMap
+    // あり得る数値毎に組み合わせの数を算出して足し合わせていく
+    (1 to 100).foldLeft(0L) { case (acc, length) =>
+      // 指定の数値がいくつ存在するのか
+      val targetNumberCount = numberCountMap.getOrElse(length, 0)
+      if (targetNumberCount < 3) acc else acc + getCombinationCount(targetNumberCount, 3)
+    }
+  }
+
+  // n個の中からr個とる組み合わせが何通りあるかを返す
+  private def getCombinationCount(n: Long, r: Long): Long = {
+    if (r == 0 || r == n) 1
+    else if (r > n / 2) getCombinationCount(n, n - r) // 計算量を減らすため
+    else (n * getCombinationCount(n - 1, r - 1)) / r // 大きな値同士の計算(=オーバーフロー発生)を回避するためこうしている
+  }
+
 }
