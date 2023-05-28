@@ -89,4 +89,18 @@ object Sixth {
     else (n * getCombinationCount(n - 1, r - 1)) / r // 大きな値同士の計算(=オーバーフロー発生)を回避するためこうしている
   }
 
+
+  // 後ろから考える
+  // 最後の一手によってどんな状態になるのかを考える
+  def tileColoring = {
+    val scanner = new java.util.Scanner(System.in)
+    val n = scanner.nextInt()
+    val colors = scanner.next().toCharArray
+
+    val isAvailable = colors.sliding(3).exists { threeChars =>
+      threeChars.forall(_ == 'R') || threeChars.forall(_ == 'B')
+    }
+    if (isAvailable) "Yes" else "No"
+  }
+
 }
