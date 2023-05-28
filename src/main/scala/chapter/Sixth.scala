@@ -103,4 +103,35 @@ object Sixth {
     if (isAvailable) "Yes" else "No"
   }
 
+
+  // 固定して全探索
+  // 何を全探索するか（どの値を固定して考えるか）を変えるだけで、一気に効率が良くなることもある
+  def soccer = {
+    val scanner = new java.util.Scanner(System.in)
+    val List(n, k) = List.fill(2)(scanner.nextInt())
+    val abList = (for (_ <- 1 to n) yield {
+      val List(a, b) = List.fill(2)(scanner.nextInt())
+      (a, b)
+    }).toList
+
+    // aとbの下限値で全探索
+    (1 to 100).foldLeft(0) { case (count, lowerLimitA) =>
+      math.max(
+        count,
+        // 同一のaの値の中でbを変化させていき、その中で最も大きな結果の値を返す
+        (1 to 100).foldLeft(0) { case (tmpCount, lowerLimitB) =>
+          math.max(tmpCount, getCount(lowerLimitA, lowerLimitB, k, abList))
+        }
+      )
+    }
+  }
+
+
+  // 範囲を満たす対象の数を返す関数
+  private def getCount(lowerLimitA: Int, lowerLimitB: Int, k: Int, abList: List[(Int, Int)]): Int = {
+    abList.count { case (a, b) => (a >= lowerLimitA && a <= lowerLimitA + k) && (b >= lowerLimitB && b <= lowerLimitB + k)         }
+  }
+
+
+
 }
