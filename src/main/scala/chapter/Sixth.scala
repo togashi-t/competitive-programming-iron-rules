@@ -133,5 +133,22 @@ object Sixth {
   }
 
 
+  // 問題を言い換える
+  // 「2人が衝突して向きを変えること」と「2人がすれ違うこと」は等価
+  def travel3 = {
+    val scanner = new java.util.Scanner(System.in)
+    val List(n, l) = List.fill(2)(scanner.nextInt())
+    val pointWithDirectionList = List.fill(n) {
+      val p = scanner.nextInt()
+      val d = scanner.nextLine().trim
+      (p, d)
+    }
+
+    pointWithDirectionList.foldLeft(0) { case (tempMaxTime, (p, d)) =>
+      val time = if (d == "E") l - p else p
+      math.max(tempMaxTime, time)
+    }
+  }
+
 
 }
