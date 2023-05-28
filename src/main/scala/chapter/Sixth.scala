@@ -1,5 +1,7 @@
 package chapter
 
+import javax.management.InvalidApplicationException
+
 object Sixth {
 
   // 偶奇を考える
@@ -148,6 +150,43 @@ object Sixth {
       val time = if (d == "E") l - p else p
       math.max(tempMaxTime, time)
     }
+  }
+
+
+  // データの持ち方を工夫する
+  // 実際のarrayを反転させるのではなく、判定しているか否かの状態を変数に持つ
+  def changeAndReverse = {
+    val scanner = new java.util.Scanner(System.in)
+    val List(n, q) = List.fill(2)(scanner.nextInt())
+    scanner.nextLine() // 次の改行文字を消費
+    val instructions = for (_ <- 1 to q) yield scanner.nextLine().split(" ").filter(_.nonEmpty).toList.map(_.toInt)
+
+    // 操作が行われる配列
+    val arr = Array.tabulate(n)(i => i + 1)
+    // isReverseは配列に逆順のときtrue
+    // outputStackには出力が生じた値を先頭から追加していく
+    val (_, outputStack) = instructions.foldLeft((false, List.empty[Int])) { case ((isReverse, tmpOutputStack), instruction) =>
+      instruction match {
+        case list if (list.nonEmpty && list.length <= 3) =>
+          val x :: xs = instruction
+          if (x == 1) { // 値の置換
+            val List (i, v) = xs
+            val index = if (isReverse) n - i else i - 1
+            arr (index) = v
+            (isReverse, tmpOutputStack)
+          } else if (x == 2) { // 配列の反転
+            (! isReverse, tmpOutputStack)
+          } else { // x == 3のとき。値の回答
+            val List (i) = xs
+            val index = if (isReverse) n - i else i - 1
+            (isReverse, arr(index) :: tmpOutputStack)
+          }
+        case _ =>
+          throw new Exception("unexpected")
+      }
+    }
+
+    outputStack.reverse.foreach(println)
   }
 
 
