@@ -190,4 +190,22 @@ object Sixth {
   }
 
 
+  // 不変量に着目する
+  def cardElimination = {
+    val scanner = new java.util.Scanner(System.in)
+    val Array(_, c) = scanner.nextLine().split(" ")
+    val colors = scanner.nextLine().toCharArray
+
+    val score = colors.foldLeft(0) { case (acc, color) =>
+      acc + (if (color == 'W') 0 else if (color == 'B') 1 else 2)
+    }
+    val res = score % 3 match {
+      case 0 => 'W'
+      case 1 => 'B'
+      case _ => 'R'
+    }
+    if (res.toString == c) "Yes" else "No"
+  }
+
+
 }
